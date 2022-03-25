@@ -1,7 +1,7 @@
 # SWITSS
 A tool for the computation of Small WITnessing SubSystems in Markov Decision Processes (MDPs) and Discrete Time Markov Chains (DTMCs).
 SWITSS implements exact and heuristic methods for computing small witnessing subsystems by reducing the problem to (mixed integer)
-linear programming. Returned subsystems can automatically be rendered graphically and are accompanied with a certificate which proves 
+linear programming. Returned subsystems can automatically be rendered graphically and are accompanied with a certificate which proves
 that the subsystem is indeed a witness.
 
 See https://simonjantsch.github.io/switss-docs/ for the documentation.
@@ -13,23 +13,35 @@ See https://simonjantsch.github.io/switss-docs/ for the documentation.
 i.e. add `export PATH="[prism install path]/bin:$PATH"` to your `~/.bashsrc`.
 
 ## Installation
-Run `sudo python3 setup.py install`.
-    
+1) Install dependencies required by the setup script
+
+    ```bash
+    pip3 install -r requirements.txt
+    ```
+
+2) Install SWITSS
+
+    ```bash
+    sudo python3 setup.py install
+    ```
+
 ## Solvers
-By installing `PuLP`, the CBC-solver is automatically installed alongside of it. In order to use the Gurobi solver, 
-`PuLP` needs to be configured (cf. [here](https://coin-or.github.io/pulp/guides/how_to_configure_solvers.html)) 
+By installing `PuLP`, the CBC-solver is automatically installed alongside of it. In order to use the Gurobi solver,
+`PuLP` needs to be configured (cf. [here](https://coin-or.github.io/pulp/guides/how_to_configure_solvers.html))
 by adding the following lines to `~/.bashrc`:
 
-    export GUROBI_HOME="[gurobi install path]/linux64"
-    export PATH="${PATH}:${GUROBI_HOME}/bin"
-    export LD_LIBRARY_PATH="${GUROBI_HOME}/lib"
-    
+```bash
+export GUROBI_HOME="[gurobi install path]/linux64"
+export PATH="${PATH}:${GUROBI_HOME}/bin"
+export LD_LIBRARY_PATH="${GUROBI_HOME}/lib"
+```
+
 ## Tests
 After installing, call `pytest --pyargs switss -v` in order to run all tests. In `switss/test/test_dtmc.py` and `switss/test/test_mdp.py` variables `lp_solver` and `milp_solvers` specify lists of used solvers. If one of these solvers happens to be not installed on your system, you can just delete it from the lists and re-install switss.
 
 ## SWITSS Command Line Tool
 SWITSS comes with a handy command line tool that makes it possible to find minimal witnessing subsystems without having to open up
-python. It supports 
+python. It supports
 
 * displaying system information,
 * transforming systems into a canonical "reachability form",
@@ -51,7 +63,7 @@ Rendering that DTMC:
 Creating & storing a reachability form from that model:
 
     switss rf dtmc examples/datasets/groups-example
-    
+
 Minimizing said reachability form by using the quotient sum heuristic on the "min"-form:
 
     switss minimize dtmc examples/datasets/groups-example-rf -m QSHeur mode=min -s threshold=0.5
