@@ -141,7 +141,7 @@ class DTMC(AbstractMDP):
         return { "P" :  P }
 
     @classmethod
-    def from_stormpy_model(cls,stormpy_model):
+    def from_stormpy_model(cls,stormpy_model,choice_model):
         
         #assert stormpy_model.model_type == "ModelType.MDP"
 
