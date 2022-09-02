@@ -77,7 +77,7 @@ class QSHeur(ProblemFormulation):
             "updatertype" : self.updatertype.__name__
         }
 
-    def _solveiter(self, reach_form, threshold, mode, labels, timeout=None):
+    def _solveiter(self, reach_form, threshold, mode, labels, timeout=None, ignore_consistency_checks=False):
         """Runs the QSheuristic using the Farkas (y- or z-) polytope
         depending on the value in mode."""
         if self.solver == "gurobi":
@@ -107,7 +107,7 @@ class QSHeur(ProblemFormulation):
 
             if result.status == "optimal":
                 certificate = result.result_vector[:certsize]
-                witness = Subsystem(reach_form, certificate, mode)
+                witness = Subsystem(reach_form, certificate, mode, ignore_consistency_checks)
                 indicator_weights = result.result_vector[certsize:]
                 no_nonzero_groups = len([i for i in indicator_weights if i > 0])
                 yield ProblemResult("success", witness, no_nonzero_groups, certificate)

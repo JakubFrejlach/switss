@@ -57,7 +57,8 @@ class ProblemFormulation:
                   threshold, 
                   mode, 
                   labels=None, 
-                  timeout=None):
+                  timeout=None,
+                  ignore_consistency_checks=False):
         """Searches for small subsystems for a given reachability form
         such that the probability of reaching the target state is above
         a given threshold: 
@@ -92,7 +93,8 @@ class ProblemFormulation:
                                threshold,
                                mode, 
                                labels=labels, 
-                               timeout=timeout)
+                               timeout=timeout,
+                               ignore_consistency_checks=ignore_consistency_checks)
 
     @abstractmethod
     def _solveiter(self, 
@@ -100,7 +102,8 @@ class ProblemFormulation:
                    threshold, 
                    mode, 
                    labels, 
-                   timeout=None):
+                   timeout=None,
+                   ignore_consistency_checks=False):
         pass
 
     def __repr__(self):
