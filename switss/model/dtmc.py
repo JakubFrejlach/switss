@@ -158,3 +158,49 @@ class DTMC(AbstractMDP):
                     P[sid,transition.column] = transition.value()
 
         return { "P" : P }
+
+    @classmethod
+    def remove_unreachable_states(cls, system, init_label):
+        initial = list(system.states_by_label[init_label])[0]
+        forward_reachable = system.reachable_mask(set([initial]), "forward")
+
+
+        reachable = [idx for idx, x in enumerate(forward_reachable) if x]
+
+        if len(reachable) == system.N:
+            # all states are reachable
+            return system
+
+        reachable_index_mapping = {v : k for k,v in enumerate(reachable)}
+
+        to_rf_cols, to_rf_rows = bidict(), bidict()
+        for sapidx in range(system.C):
+            stateidx, actionidx = system.index_by_state_action.inv[sapidx]
+            if forward_reachable[stateidx]:
+                newidx = reachable_index_mapping[stateidx] # reachable.index(stateidx)
+                to_rf_rows[(stateidx, actionidx)] = (newidx, actionidx)
+                to_rf_cols[stateidx] = newidx
+
+        new_N = len(set(to_rf_cols.values()))
+        new_C = len(set(to_rf_rows.values()))
+        new_P = dok_matrix((new_C, new_N))
+        new_index_by_state_action = bidict()
+
+
+        new_labeling = {key:set() for key in system.states_by_label.keys()}
+        for newidx, ((source, action),(newsource, newaction)) in enumerate(to_rf_rows.items()):
+            new_index_by_state_action[(newsource, newaction)] = newidx
+            idx = system.index_by_state_action[(source, action)]
+
+            # states and actions remapping
+            for dest in [s for s,a,p in system.successors(source) if a == action]:
+                if dest in to_rf_cols:
+                    newdest = to_rf_cols[dest]
+                    new_P[newidx, newdest] = system.P[idx, dest]
+
+            # new labeling
+            for label, states in system.states_by_label.items():
+                if idx in states:
+                    new_labeling[label].add(newidx)
+
+        return cls(new_P, label_to_states=new_labeling)
